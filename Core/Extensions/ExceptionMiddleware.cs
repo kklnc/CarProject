@@ -33,15 +33,15 @@ namespace Core.Extensions
 
         private Task HandleExceptionAsync(HttpContext httpContext, Exception e)
         {
-            httpContext.Response.ContentType = "application/json";//content type biz json gönderiyoruz diyoruz
-            httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;//burada hata olursa internalservererror hata vermişiz statu kdodunu mesajı da aşağıda 
+            httpContext.Response.ContentType = "application/json";
+            httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            IEnumerable<ValidationFailure> errors;//hataları kendi listemizi oluşturup onun içine koyacağız
+            IEnumerable<ValidationFailure> errors;
             string message = "Internal Server Error";
-            if (e.GetType() == typeof(ValidationException))//eğer aldığım hata val.iex. ise mesajı  yukardaki mesajla değiştir demişiz
+            if (e.GetType() == typeof(ValidationException))
             {
                 message = e.Message;
-                errors = ((ValidationException)e).Errors;//validation satasu olduğu için statuskodunu değiştiriyoruz
+                errors = ((ValidationException)e).Errors;
                 httpContext.Response.StatusCode = 400;
 
                 return httpContext.Response.WriteAsync(new ValidationErrorDetails
@@ -52,8 +52,7 @@ namespace Core.Extensions
                 }.ToString());
             }
 
-            return httpContext.Response.WriteAsync(new ErrorDetails //vereceğin responsu da bu şekilde ver demişiz.
-                                                                    //eğer databaseden hata alıyorsak burası çalışacak
+            return httpContext.Response.WriteAsync(new ErrorDetails 
             {
                 StatusCode = httpContext.Response.StatusCode,
                 Message = message
